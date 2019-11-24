@@ -83,7 +83,7 @@ void allTransactionHistory();
 //LINK LIST CLIENT
 bool isEmptyClientList();
 void createClientList();
-void inputClientList(AdminAccount adminAccount);
+void inputClientList(ClientAccount clientAccount);
 bool checkingClientAccount(char accountNumber[16],char PIN[7]);
 void updateClientList(AdminAccount tempAdminAccount);
 void showListClientAccount();
@@ -948,7 +948,7 @@ void updateAdminAccount(){
     cout<<"|" << setfill(' ') << setw(41) << "BANKING SYSTEM APPLICATION" <<setfill(' ')<<setw(17) << "|\n";
     cout<<"|" << setfill(' ') << setw(35) << "UPDATE ACCOUNT" <<setfill(' ')<<setw(23) << "|\n";
     cout<<"|" << setfill(' ') << setw(47) <<"Jl.Veteran No.45, Babasari, Yogyakarta" << setw(11) << "|\n";
-    cout<<"+"<<setw(58)<<setfill('-')<<"+\n";
+    cout<<"+"<<setw(58)<<setfill('-')<<"+\n";cin.ignore();
     cout<<" ACCOUNT ID\t: ";
     cin.getline(accountID, sizeof(accountID));
     cout << endl;
@@ -965,7 +965,7 @@ void updateAdminAccount(){
             }
             check = check -> next;
         }
-        if(result){
+        if(result == true){
             system("CLS");
     cout<<"+"<<setw(58)<<setfill('-')<<"+\n";
     cout<<"|" << setfill(' ') << setw(41) << "BANKING SYSTEM APPLICATION" <<setfill(' ')<<setw(17) << "|\n";
@@ -976,7 +976,7 @@ void updateAdminAccount(){
     cout << endl<<endl;
     cout<<" PIN\t\t: ";
     cin.getline(newPIN, sizeof(newPIN));
-    cout << endl<<endl;
+    cout << endl;
     cout<<" ADDRESS\t: ";
     cin.getline(address, sizeof(address));
     cout << endl;
@@ -1014,7 +1014,7 @@ void createAdminList(){
 void inputAdminList(AdminAccount tempAdminAccount){
     //Variable bantu dengan type pointer
     adminPointer help, check;
-    bool result = false;
+    bool result = true;
     help = (linkListAdmin *)malloc(sizeof(linkListAdmin));
     help -> adminAccounts = tempAdminAccount;
     help -> next = NULL;
@@ -1024,36 +1024,33 @@ void inputAdminList(AdminAccount tempAdminAccount){
         firstAdmin = help;
         lastAdmin = firstAdmin;
         cout << "\n\n SUCCESSFULY ADD ADMIN ACCOUNT\n";
-    }
-    else
-    {
-        help = firstAdmin;
-        while(help->next != NULL){
-            if((strcmp(help -> adminAccounts.accountID,tempAdminAccount.accountID)==0) && (strcmp(help -> adminAccounts.PIN,tempAdminAccount.PIN)==0))
+    }else if((firstAdmin == lastAdmin)&&(strcmp(firstAdmin -> adminAccounts.accountID,tempAdminAccount.accountID)!=0) && (strcmp(firstAdmin -> adminAccounts.PIN,tempAdminAccount.PIN)!=0)){
+            firstAdmin -> next = help;
+            lastAdmin = help;
+            lastAdmin -> prev = firstAdmin;
+            lastAdmin -> next = NULL;
+            cout << "\n\n SUCCESSFULY ADD ADMIN ACCOUNT\n";
+        }else{
+        check = firstAdmin;
+        while(check -> next != NULL){
+            if((strcmp(tempAdminAccount.accountID,check -> adminAccounts.accountID)==0) && (strcmp(tempAdminAccount.PIN,check -> adminAccounts.PIN)==0))
             {
                 result = true;
-                break;
             }
             else
             {
                 result = false;
             }
-            help = help -> next;
+            check= check -> next;
         };
         if (result == true){
         cout << "\n\n CANT CREATE THE ACCOUNT, USERNAME ALREADY USED\n";
-        }
-        else if((firstAdmin == lastAdmin) && result == false)
-        {
-            firstAdmin -> next = help;
-            help -> prev = firstAdmin;
-            lastAdmin = help;
-            cout << "\n\n SUCCESSFULY ADD ADMIN ACCOUNT\n";
         }else
         {
             lastAdmin -> next = help;
             help -> prev = lastAdmin;
             lastAdmin = help;
+            help -> next = NULL;
             cout << "\n\n SUCCESSFULY ADD ADMIN ACCOUNT\n";
         }
     }
@@ -1062,6 +1059,10 @@ void inputAdminList(AdminAccount tempAdminAccount){
     system("CLS");
 };
 void showListAdminAccount(){
+     if(isEmptyAdminList())
+    {
+        cout << "SORRT CANT DELETE THE DATA, NOT FOUND THE DATA";
+    }else{
     adminPointer help;
     help = firstAdmin;
     int no = 0;
@@ -1078,6 +1079,7 @@ void showListAdminAccount(){
         help = help -> next;
     }while(help != NULL);
     cout<<"+"<<setw(130)<<setfill('-')<<"+\n";
+    }
     system("\nPAUSE");
     system("CLS");
 };
@@ -1085,13 +1087,40 @@ void deleteAdminList(char accountID[16], char PIN[7]){
     if(isEmptyAdminList())
     {
         cout << "SORRT CANT DELETE THE DATA, NOT FOUND THE DATA";
-    }else if((strcmp(firstAdmin -> adminAccounts.accountID, accountID)==0) && (strcmp(firstAdmin -> adminAccounts.PIN, PIN)==0))
+    }else if((firstAdmin->next == NULL) &&(strcmp(firstAdmin -> adminAccounts.accountID, accountID)==0) && (strcmp(firstAdmin -> adminAccounts.PIN, PIN)==0))
             {
                 adminPointer Delete;
                 Delete = firstAdmin;
                 free(Delete);
                 firstAdmin = NULL;
                 lastAdmin = firstAdmin;
+                cout << "\n\n DELETE DATA SUCCESFULLY";
+            }else if((firstAdmin->next == lastAdmin) &&(strcmp(lastAdmin -> adminAccounts.accountID, accountID)==0) && (strcmp(lastAdmin -> adminAccounts.PIN, PIN)==0))
+            {
+                adminPointer Delete;
+                Delete = lastAdmin;
+                free(Delete);
+                lastAdmin = firstAdmin;
+                firstAdmin -> next = NULL;
+                firstAdmin -> prev = NULL;
+                cout << "\n\n DELETE DATA SUCCESFULLY";
+            }else if((firstAdmin->next == lastAdmin) &&(strcmp(firstAdmin -> adminAccounts.accountID, accountID)==0) && (strcmp(firstAdmin -> adminAccounts.PIN, PIN)==0))
+            {
+                adminPointer Delete;
+                Delete = firstAdmin;
+                free(Delete);
+                firstAdmin = lastAdmin;
+                firstAdmin -> next = NULL;
+                firstAdmin -> prev = NULL;
+                cout << "\n\n DELETE DATA SUCCESFULLY";
+            }
+            else if((strcmp(firstAdmin -> adminAccounts.accountID, accountID)==0) && (strcmp(firstAdmin -> adminAccounts.PIN, PIN)==0))
+            {
+                adminPointer Delete;
+                Delete = firstAdmin;
+                firstAdmin = firstAdmin -> next;
+                firstAdmin -> prev = NULL;
+                free(Delete);
                 cout << "\n\n DELETE DATA SUCCESFULLY";
             }
             else if((strcmp(lastAdmin -> adminAccounts.accountID, accountID)==0) && (strcmp(lastAdmin -> adminAccounts.PIN, PIN)==0))
@@ -1104,15 +1133,16 @@ void deleteAdminList(char accountID[16], char PIN[7]){
                 free(Delete);
                 cout << "\n\n DELETE DATA SUCCESFULLY";
             }
-    else
-    {
+            else
+            {
         adminPointer help, Delete;
         help = firstAdmin;
         bool result = true;
-        while(help->next != NULL || ((strcmp(help -> next -> adminAccounts.accountID, accountID)==0) && ((strcmp(help -> next -> adminAccounts.PIN, PIN)==0)))){
-            if((strcmp(help -> adminAccounts.accountID, accountID)!=0) && (strcmp(help -> adminAccounts.PIN, PIN)!=0))
+        while(help->next != NULL ){
+            if((strcmp(help -> adminAccounts.accountID, accountID)==0) && (strcmp(help -> adminAccounts.PIN, PIN)==0))
             {
                 result = true;
+                break;
             }
             else
             {
@@ -1120,13 +1150,16 @@ void deleteAdminList(char accountID[16], char PIN[7]){
             }
             help = help -> next;
         };
-        if(result)
+        if(result == true)
         {
                 Delete = help -> next;
                 help -> next = Delete -> next;
                 Delete -> next -> prev = Delete -> prev;
                 free(Delete);
                 cout << "\n\n DELETE DATA SUCCESFULLY";
+        }
+        else{
+            cout << "SORRT CANT DELETE THE DATA, NOT FOUND THE DATA";
         }
     }
     cout<<endl;
@@ -1137,32 +1170,41 @@ void updateAdminList(AdminAccount tempAdminAccount){
     adminPointer update, help, Delete;
     update = (linkListAdmin *)malloc(sizeof(linkListAdmin));
     update -> adminAccounts = tempAdminAccount;
-    firstAdmin -> next = NULL;
-    firstAdmin -> prev = NULL;
+    update-> next = NULL;
+    update -> prev = NULL;
     bool result = true;
-    do
+    if((strcmp(firstAdmin->adminAccounts.accountID,tempAdminAccount.accountID)==0) && (strcmp(firstAdmin->adminAccounts.PIN,tempAdminAccount.PIN)==0)){
+        Delete = firstAdmin;
+        help = firstAdmin -> next;
+        firstAdmin = help;
+        help-> prev = update;
+        update -> next = help;
+        firstAdmin = update;
+        free(Delete);
+
+    }else{
+    while((strcmp(help->next->adminAccounts.accountID,tempAdminAccount.accountID)==0) && (strcmp(help->next->adminAccounts.PIN,tempAdminAccount.PIN)==0))
     {
-        if(help -> adminAccounts.accountID == tempAdminAccount.accountID && help -> adminAccounts.PIN == tempAdminAccount.PIN )
-        {
+        if((strcmp(help->next->adminAccounts.accountID,tempAdminAccount.accountID)==0) && (strcmp(help->next->adminAccounts.PIN,tempAdminAccount.PIN)==0)){
             result = true;
-        }
-        else
-        {
-            result = false;
+        }else{
+        result = false;
         }
         help = help -> next;
-    }
-    while(help != NULL);
-    if(result)
+    };
+    if(result == true)
     {
-        help = Delete;
-        update -> next = help -> next;
-        update -> prev = help -> prev;
+        help -> next = Delete;
+        help -> next = update;
+        update ->prev = help;
+        update -> next = Delete -> next;
+        Delete -> next -> prev  =  update;
         free(Delete);
     }
     else
     {
         cout << "NOT FOUND ADMIN ACCOUNT !!!\n";
+    }
     }
 
 }
@@ -1204,6 +1246,7 @@ void createClientAccount(){
     cout << endl;
     cout<<" No.Telephon\t: ";
     cin.getline(temp.noTelp, sizeof(temp.noTelp));
+    inputClientList(temp);
 }
 void deleteClientAccount(){
 }
@@ -1224,32 +1267,53 @@ void createClientList(){
 };
 void inputClientList(ClientAccount tempClientAccounts){
     //Variable bantu dengan type pointer
-    clientPointer help;
+    //Variable bantu dengan type pointer
+    clientPointer help, check;
+    bool result = true;
     help = (linkListClient *)malloc(sizeof(linkListClient));
     help -> clientAccounts = tempClientAccounts;
-    firstClient -> next = NULL;
-    firstClient -> prev = NULL;
-    if(isEmptyClientList())
+    help -> next = NULL;
+    help -> prev = NULL;
+    if(isEmptyAdminList())
     {
         firstClient = help;
         lastClient = firstClient;
-    }
-    else
-    {
-        clientPointer check;
-        bool result = false;
+        cout << "\n\n SUCCESSFULY ADD ADMIN ACCOUNT\n";
+    }else if((firstClient == lastClient)&&(strcmp(firstClient -> clientAccounts.accountNumber,tempClientAccounts.accountNumber)!=0) && (strcmp(firstClient -> clientAccounts.PIN,tempClientAccounts.PIN)!=0)){
+            firstClient -> next = help;
+            lastClient = help;
+            lastClient-> prev = firstClient;
+            lastClient -> next = NULL;
+            cout << "\n\n SUCCESSFULY ADD ADMIN ACCOUNT\n";
+        }else{
         check = firstClient;
-        while(check -> next != NULL )
-        {
-            if(check -> clientAccounts.accountNumber == tempClientAccounts.accountNumber)
+        while(check -> next != NULL){
+            if((strcmp(tempClientAccounts.accountNumber,check -> clientAccounts.accountNumber)==0) && (strcmp(tempClientAccounts.PIN,check -> clientAccounts.PIN)==0))
             {
                 result = true;
             }
-            check = check -> next;
+            else
+            {
+                result = false;
+            }
+            check= check -> next;
+        };
+        if (result == true){
+        cout << "\n\n CANT CREATE THE ACCOUNT, USERNAME ALREADY USED\n";
+        }else
+        {
+            lastClient -> next = help;
+            help -> prev = lastClient;
+            lastClient = help;
+            help -> next = NULL;
+            cout << "\n\n SUCCESSFULY ADD ADMIN ACCOUNT\n";
         }
     }
+    cout<<endl;
+    system(" PAUSE");
+    system("CLS");
 };
-void deleteClientList(string accountNumber, string PIN){
+void deleteClientList(char accountNumber[16], char PIN[7]){
 
 };
 void showListClientAccount(){
