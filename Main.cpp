@@ -6,7 +6,7 @@
 using namespace std;
 typedef int Queue;
 typedef struct queue *QueuePointer;
-struct queu{
+struct queue{
     Queue no;
     QueuePointer next;
 };
@@ -115,7 +115,6 @@ void createStack();
 void inputStack();
 void listStack();
 void deleteStack();
-
 int main(){
     createAdminList();
     createClientList();
@@ -347,6 +346,7 @@ void adminMenu(){
     cout << "  PASSWORD  : ";
     getline(cin, tempPassword);
     system("CLS");
+    cin.clear();
     do
     {
         x = 13;
@@ -448,12 +448,7 @@ void adminMenu(){
                 mainMenu();
 
             }
-            else
-            {
-                GetPosition(54,x); //Jika Di tekan Selain Tombol Atas Bawah tanda Panah Tetap
-                cout<<"-->";
-            }
-            if(GetAsyncKeyState(VK_RETURN)||GetAsyncKeyState(VK_RIGHT))
+            else if(GetAsyncKeyState(VK_RETURN)||GetAsyncKeyState(VK_RIGHT))
             {
                 switch(menu)
                 {
@@ -487,6 +482,9 @@ void adminMenu(){
                     break;
                 };
                 }
+            }else{
+                GetPosition(54,x);
+                cout<<"-->";
             }
         }
     }
@@ -613,12 +611,7 @@ void clientMenu(){
                 mainMenu();
 
             }
-            else
-            {
-                GetPosition(54,x); //Jika Di tekan Selain Tombol Atas Bawah tanda Panah Tetap
-                cout<<"-->";
-            }
-            if(GetAsyncKeyState(VK_RETURN)||GetAsyncKeyState(VK_RIGHT))
+            else if(GetAsyncKeyState(VK_RETURN)||GetAsyncKeyState(VK_RIGHT))
             {
                 switch(menu)
                 {
@@ -653,6 +646,9 @@ void clientMenu(){
                     break;
                 };
                 }
+            }else{
+                GetPosition(54,x);
+                cout<<"-->";
             }
         }
     }
@@ -660,6 +656,7 @@ void clientMenu(){
 
 }
 void infoMenu(){
+    cin.clear();
     GetPosition(57,15);
     cout<<"+"<<setw(58)<<setfill('-')<<"+";
     GetPosition(57,16);
@@ -796,12 +793,7 @@ void managerMenu(){
                 //Back to Main Menu
                 mainMenu();
             }
-            else
-            {
-                GetPosition(54,x); //Jika Di tekan Selain Tombol Atas Bawah tanda Panah Tetap
-                cout<<"-->";
-            }
-            if(GetAsyncKeyState(VK_RETURN )|| GetAsyncKeyState(VK_RIGHT))
+            else if(GetAsyncKeyState(VK_RETURN)|| GetAsyncKeyState(VK_RIGHT))
             {
                 system("CLS");
                 GetPosition(57,8);
@@ -867,11 +859,15 @@ void managerMenu(){
                     //Back To Main Menu
                     mainMenu();
                 }
+            }else{
+                GetPosition(54,x);
+                cout<<"-->";
             }
         }
     }
     while(menu > 0 && menu < 5);
 }
+//MANAGER MENU
 void createAdminAccount(){
     AdminAccount temp;
     cout<<"+"<<setw(58)<<setfill('-')<<"+\n";
@@ -916,6 +912,9 @@ void listAdminAccount(){
     cout<<"+"<<setw(4)<<setfill('-')<<"+"<<setw(22)<<setfill('-')<<"+"<<setw(9)<<setfill('-')<<"+"<<setw(18)<<setfill('-')<<"+"<<setw(15)<<setfill('-')<<"+"<<setw(28)<<setfill('-')<<"+"<<setw(17)<<setfill('-')<<"+"<<setw(12)<<setfill('-')<<"+"<<setw(19)<<setfill('-')<<"+\n";
 }
 void deleteAdminAccount(){
+    if(isEmptyAdminList()){
+        cout << "UNABLE TO SAVE THE DATA, THE STORAGE IS EMPTY";
+    }else{
     char accountID[16];
     char PIN[7];
     cout<<"+"<<setw(58)<<setfill('-')<<"+\n";
@@ -930,8 +929,12 @@ void deleteAdminAccount(){
     cout<<" PIN\t\t: ";
     cin.getline(PIN, sizeof(PIN));
     deleteAdminList(accountID, PIN);
+    }
 }
 void updateAdminAccount(){
+    if(isEmptyAdminList()){
+        cout << "UNABLE TO SAVE THE DATA, THE STORAGE IS EMPTY";
+    }else{
     AdminAccount temp;
     char accountID[16];
     char PIN[7];
@@ -988,7 +991,9 @@ void updateAdminAccount(){
     strcpy(temp.noKTP, check->adminAccounts.noKTP);
     updateAdminList(temp);
         }
+    }
 }
+//LINK LIST MENU MANAGER
 bool isEmptyAdminList(){
     if(firstAdmin == NULL)
     {
@@ -1009,7 +1014,7 @@ void createAdminList(){
 void inputAdminList(AdminAccount tempAdminAccount){
     //Variable bantu dengan type pointer
     adminPointer help, check;
-    bool result = true;
+    bool result = false;
     help = (linkListAdmin *)malloc(sizeof(linkListAdmin));
     help -> adminAccounts = tempAdminAccount;
     help -> next = NULL;
@@ -1022,37 +1027,38 @@ void inputAdminList(AdminAccount tempAdminAccount){
     }
     else
     {
-        do
-        {
-            if((strcmp(tempAdminAccount.accountID,help -> adminAccounts.accountID)==0) && (strcmp(tempAdminAccount.PIN,help -> adminAccounts.PIN)==0))
+        help = firstAdmin;
+        while(help->next != NULL){
+            if((strcmp(help -> adminAccounts.accountID,tempAdminAccount.accountID)==0) && (strcmp(help -> adminAccounts.PIN,tempAdminAccount.PIN)==0))
             {
                 result = true;
+                break;
             }
             else
             {
                 result = false;
             }
             help = help -> next;
+        };
+        if (result == true){
+        cout << "\n\n CANT CREATE THE ACCOUNT, USERNAME ALREADY USED\n";
         }
-        while(help != NULL);
-
-        if(firstAdmin == lastAdmin && !result)
+        else if((firstAdmin == lastAdmin) && result == false)
         {
             firstAdmin -> next = help;
             help -> prev = firstAdmin;
             lastAdmin = help;
             cout << "\n\n SUCCESSFULY ADD ADMIN ACCOUNT\n";
-        }else if(!result)
+        }else
         {
             lastAdmin -> next = help;
             help -> prev = lastAdmin;
             lastAdmin = help;
             cout << "\n\n SUCCESSFULY ADD ADMIN ACCOUNT\n";
-        }else{
-        cout << "\n\n CANT CREATE THE ACCOUNT, USERNAME ALREADY USED\n";
         }
     }
-    system("PAUSE>NUL");
+    cout<<endl;
+    system(" PAUSE");
     system("CLS");
 };
 void showListAdminAccount(){
@@ -1067,27 +1073,44 @@ void showListAdminAccount(){
     cout<<"+"<<setw(4)<<setfill('-')<<"+"<<setw(22)<<setfill('-')<<"+"<<setw(11)<<setfill('-')<<"+"<<setw(18)<<setfill('-')<<"+"<<setw(15)<<setfill('-')<<"+"<<setw(28)<<setfill('-')<<"+"<<setw(17)<<setfill('-')<<"+"<<setw(15)<<setfill('-')<<"+\n";
     cout<<"|"<<"NO |ACCOUNT ID"<<setw(15)<<setfill(' ')<<"|PIN"<<setw(12)<<setfill(' ')<< "|NAME"<<setw(20)<<setfill(' ')<< "|NO KTP"<<setw(16)<<setfill(' ')<< "|ADDRESS"<<setw(30)<<setfill(' ')<< "|BIRTH DAY"<<setw(15)<<setfill(' ')<< "|NO TELP"<<setfill(' ')<< setw(8)<<"|\n";
     cout<<"+"<<setw(4)<<setfill('-')<<"+"<<setw(22)<<setfill('-')<<"+"<<setw(11)<<setfill('-')<<"+"<<setw(18)<<setfill('-')<<"+"<<setw(15)<<setfill('-')<<"+"<<setw(28)<<setfill('-')<<"+"<<setw(17)<<setfill('-')<<"+"<<setw(15)<<setfill('-')<<"+\n";
-    while(help != NULL)
-    {
+    do{
         cout<<"|"<<++no<<setfill(' ')<<setw(3)<<"|"<<left<<setfill(' ')<<setw(21)<<help->adminAccounts.accountID<<setfill(' ')<<"|"<<setw(10)<<help->adminAccounts.PIN<<setfill(' ')<<"|"<<setw(17)<<help->adminAccounts.name<<setfill(' ')<<"|"<<setw(14)<<help->adminAccounts.noKTP<<setfill(' ')<<"|"<<setw(27)<<help->adminAccounts.address<<setfill(' ')<<"|"<<setw(16)<<help->adminAccounts.birthDay<<setfill(' ')<<"|"<<setw(13)<<help->adminAccounts.noTelp<<setfill(' ')<<"|"<<right<<endl;
         help = help -> next;
-    };
+    }while(help != NULL);
     cout<<"+"<<setw(130)<<setfill('-')<<"+\n";
-    system("PAUSE>NUL");
+    system("\nPAUSE");
     system("CLS");
 };
 void deleteAdminList(char accountID[16], char PIN[7]){
     if(isEmptyAdminList())
     {
-        cout << "NOT FOUND DATA";
-    }
+        cout << "SORRT CANT DELETE THE DATA, NOT FOUND THE DATA";
+    }else if((strcmp(firstAdmin -> adminAccounts.accountID, accountID)==0) && (strcmp(firstAdmin -> adminAccounts.PIN, PIN)==0))
+            {
+                adminPointer Delete;
+                Delete = firstAdmin;
+                free(Delete);
+                firstAdmin = NULL;
+                lastAdmin = firstAdmin;
+                cout << "\n\n DELETE DATA SUCCESFULLY";
+            }
+            else if((strcmp(lastAdmin -> adminAccounts.accountID, accountID)==0) && (strcmp(lastAdmin -> adminAccounts.PIN, PIN)==0))
+            {
+                adminPointer Delete, help;
+                Delete = lastAdmin;
+                help = lastAdmin -> prev;
+                lastAdmin = help;
+                lastAdmin -> next = NULL;
+                free(Delete);
+                cout << "\n\n DELETE DATA SUCCESFULLY";
+            }
     else
     {
         adminPointer help, Delete;
         help = firstAdmin;
         bool result = true;
-        while(help->next != NULL){
-            if((strcmp(help -> adminAccounts.accountID, accountID)!=0) && ((strcmp(help -> adminAccounts.PIN, PIN)!=0)))
+        while(help->next != NULL || ((strcmp(help -> next -> adminAccounts.accountID, accountID)==0) && ((strcmp(help -> next -> adminAccounts.PIN, PIN)==0)))){
+            if((strcmp(help -> adminAccounts.accountID, accountID)!=0) && (strcmp(help -> adminAccounts.PIN, PIN)!=0))
             {
                 result = true;
             }
@@ -1095,37 +1118,20 @@ void deleteAdminList(char accountID[16], char PIN[7]){
             {
                 result = false;
             }
-
             help = help -> next;
         };
-
         if(result)
         {
-            if(firstAdmin -> adminAccounts.accountID == accountID && firstAdmin -> adminAccounts.PIN == PIN)
-            {
-                Delete = firstAdmin;
-                free(Delete);
-                firstAdmin = NULL;
-                lastAdmin = firstAdmin;
-            }
-            else if(lastAdmin -> adminAccounts.accountID == accountID && lastAdmin -> adminAccounts.PIN == PIN)
-            {
-                Delete = lastAdmin;
-                help = lastAdmin -> prev;
-                free(Delete);
-                lastAdmin = help;
-                lastAdmin -> next = NULL;
-            }
-            else
-            {
-                Delete = help;
-                help = help -> prev;
+                Delete = help -> next;
                 help -> next = Delete -> next;
-                Delete -> prev = help;
+                Delete -> next -> prev = Delete -> prev;
                 free(Delete);
-            }
+                cout << "\n\n DELETE DATA SUCCESFULLY";
         }
     }
+    cout<<endl;
+    system(" PAUSE");
+    system("CLS");
 };
 void updateAdminList(AdminAccount tempAdminAccount){
     adminPointer update, help, Delete;
@@ -1160,6 +1166,7 @@ void updateAdminList(AdminAccount tempAdminAccount){
     }
 
 }
+//CLIENT MENU
 bool isEmptyClientList(){
     if(firstClient == NULL)
     {
