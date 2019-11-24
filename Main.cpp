@@ -6,14 +6,12 @@
 using namespace std;
 typedef int Queue;
 typedef struct queue *QueuePointer;
-struct queue
-{
+struct queu{
     Queue no;
     QueuePointer next;
 };
 QueuePointer firstQueue, lastQueue ;
-struct History
-{
+struct History{
     char accountNumber[13];
     char typeOfTransaction[10];
     int debet;
@@ -21,8 +19,7 @@ struct History
     char *date;
 };
 //ADMIN STRUCT
-struct AdminAccount
-{
+struct AdminAccount{
     char name[50];
     char address[100];
     char birthDay[20];
@@ -33,16 +30,14 @@ struct AdminAccount
 };
 //ADMIN LINK LIST
 typedef struct linkListAdmin *adminPointer;
-struct linkListAdmin
-{
+struct linkListAdmin{
     AdminAccount adminAccounts;
     adminPointer next;
     adminPointer prev;
 };
 adminPointer firstAdmin, lastAdmin;
 
-struct ClientAccount
-{
+struct ClientAccount{
     History AllHistoryTransaction;
     char name[50];
     char address[100];
@@ -52,10 +47,8 @@ struct ClientAccount
     char accountNumber[16];
     char PIN[10];
 };
-//Struct Client Account[Link List]
 typedef struct linkListClient *clientPointer;
-struct linkListClient
-{
+struct linkListClient{
     ClientAccount clientAccounts;
     clientPointer next;
     clientPointer prev;
@@ -73,7 +66,7 @@ void inputAdminList(AdminAccount adminAccount);
 bool checkingAdminAccount();
 void updateAdminList(AdminAccount tempAdminAccount);
 void deleteAdminList(char accountID[16], char PIN[7]);
-void listAdminList();
+void showListAdminAccount();
 //CLIENT METHOD
 void createClientAccount();
 void deleteClientAccount();
@@ -81,52 +74,56 @@ void updateClientAccount();
 void listClientAccount();
 bool checkingClientAccount();
 bool isEmptyClientList();
+//CLIENT METHOD MENU
+void cekSaldo();
+void transfer();
+void withDraw();
+void changePIN();
+void allTransactionHistory();
 //LINK LIST CLIENT
-bool isEmptyAdminList();
-void createAdminList();
-void inputAdminList(AdminAccount adminAccount);
-bool checkingAdminAccount(char accountNumber[16],char PIN[7]);
-void updateAdminList(AdminAccount tempAdminAccount);
-
+bool isEmptyClientList();
+void createClientList();
+void inputClientList(AdminAccount adminAccount);
+bool checkingClientAccount(char accountNumber[16],char PIN[7]);
+void updateClientList(AdminAccount tempAdminAccount);
+void showListClientAccount();
+//OTHER
 int QueueNumber = 0;
 bool checking = true;
 void GetPosition(int x, int y);
 void GetLoading(int x, int y);
+void GetDateSystem();
+//MAIN MENU
 void mainMenu();
+//SUB MENU
 void adminMenu();
 void clientMenu();
 void infoMenu();
 void managerMenu();
-void showListClientAccount();
-void showListAdminAccount();
+//ADMIN ASSIGNMENT
+void deposito();
 void transactionHistory();
-void createClientList();
+//QUEUE
 void createQueue();
 int isEmptyQueue();
 void enqueue();
 void dequeue();
 void printQueue();
+//STACK
 int isEmptyStack();
 void createStack();
 void inputStack();
 void listStack();
 void deleteStack();
-void deposito();
-int main()
-{
-    int no = 0;
+
+int main(){
     createAdminList();
     createClientList();
     system("COLOR 09");
-    time_t now = time(0);
-    char * time = ctime(&now);
-    tm *gmtm = gmtime(&now);
-    time = asctime(gmtm);
     GetLoading(75, 21);
     mainMenu();
 }
-void mainMenu()
-{
+void mainMenu(){
     bool running;
     int x;
     int mainMenu;
@@ -280,13 +277,11 @@ void mainMenu()
     }
     while(mainMenu == ADMIN || CLIENT || INFO);
 }
-void GetPosition(int x, int y)
-{
+void GetPosition(int x, int y){
     COORD CursorPosition = {x,y}; //Mengatur posisi
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),CursorPosition);
 }
-void GetLoading(int x, int y)
-{
+void GetLoading(int x, int y){
     for(int i = 0; i < 101 ; i++)
     {
         system("COLOR 09");
@@ -327,8 +322,9 @@ void GetLoading(int x, int y)
         }
     }
 }
-void adminMenu()
-{
+void GetDateSystem(){
+}
+void adminMenu(){
     int menu, x;
     bool running;
     string tempIDAdmin;
@@ -449,7 +445,7 @@ void adminMenu()
             {
                 PlaySound(TEXT("SoundEffect.wav"), NULL, SND_SYNC);
                 system("CLS");
-                main();
+                mainMenu();
 
             }
             else
@@ -497,8 +493,7 @@ void adminMenu()
     while(menu > 0 && menu < 7);
 
 }
-void clientMenu()
-{
+void clientMenu(){
     int menu, x;
     bool running;
     string tempIDAdmin;
@@ -615,7 +610,7 @@ void clientMenu()
             {
                 PlaySound(TEXT("SoundEffect.wav"), NULL, SND_SYNC);
                 system("CLS");
-                main();
+                mainMenu();
 
             }
             else
@@ -664,8 +659,7 @@ void clientMenu()
     while(menu > 0 && menu < 7);
 
 }
-void infoMenu()
-{
+void infoMenu(){
     GetPosition(57,15);
     cout<<"+"<<setw(58)<<setfill('-')<<"+";
     GetPosition(57,16);
@@ -694,7 +688,7 @@ void infoMenu()
     {
         PlaySound(TEXT("SoundEffect.wav"), NULL, SND_SYNC);
         system("CLS");
-        main();
+        mainMenu();
     }
     else
     {
@@ -702,8 +696,7 @@ void infoMenu()
     }
 
 }
-void managerMenu()
-{
+void managerMenu(){
     int menu = 1;
     bool running;
     string companyID;
@@ -879,8 +872,7 @@ void managerMenu()
     }
     while(menu > 0 && menu < 5);
 }
-void createAdminAccount()
-{
+void createAdminAccount(){
     AdminAccount temp;
     cout<<"+"<<setw(58)<<setfill('-')<<"+\n";
     cout<<"|" << setfill(' ') << setw(41) << "BANKING SYSTEM APPLICATION" <<setfill(' ')<<setw(17) << "|\n";
@@ -911,8 +903,7 @@ void createAdminAccount()
     GetLoading(1,19);
     inputAdminList(temp);
 }
-void listAdminAccount()
-{
+void listAdminAccount(){
     adminPointer help;
     int no = 0;
     cout<<"+"<<setw(144)<<setfill('-')<<"+\n";
@@ -924,8 +915,7 @@ void listAdminAccount()
     cout<<"|"<<"NO |ACCOUNT ID"<<setw(15)<<setfill(' ')<<"|PIN"<<setw(10)<<setfill(' ')<< "|NAME"<<setw(20)<<setfill(' ')<< "|NO KTP"<<setw(16)<<setfill(' ')<< "|ADDRESS"<<setw(30)<<setfill(' ')<< "|BIRTH DAY"<<setw(15)<<setfill(' ')<< "|NO TELP"<<setw(12)<<setfill(' ')<< "|BALANCE"<<setw(12)<<setfill(' ') <<"|\n";
     cout<<"+"<<setw(4)<<setfill('-')<<"+"<<setw(22)<<setfill('-')<<"+"<<setw(9)<<setfill('-')<<"+"<<setw(18)<<setfill('-')<<"+"<<setw(15)<<setfill('-')<<"+"<<setw(28)<<setfill('-')<<"+"<<setw(17)<<setfill('-')<<"+"<<setw(12)<<setfill('-')<<"+"<<setw(19)<<setfill('-')<<"+\n";
 }
-void deleteAdminAccount()
-{
+void deleteAdminAccount(){
     char accountID[16];
     char PIN[7];
     cout<<"+"<<setw(58)<<setfill('-')<<"+\n";
@@ -941,8 +931,7 @@ void deleteAdminAccount()
     cin.getline(PIN, sizeof(PIN));
     deleteAdminList(accountID, PIN);
 }
-void updateAdminAccount()
-{
+void updateAdminAccount(){
     AdminAccount temp;
     char accountID[16];
     char PIN[7];
@@ -1000,8 +989,7 @@ void updateAdminAccount()
     updateAdminList(temp);
         }
 }
-bool isEmptyAdminList()
-{
+bool isEmptyAdminList(){
     if(firstAdmin == NULL)
     {
         return true;
@@ -1011,16 +999,14 @@ bool isEmptyAdminList()
         return false;
     }
 };
-void createAdminList()
-{
+void createAdminList(){
     adminPointer List;
     List = (linkListAdmin *)malloc(sizeof(linkListAdmin));
     List = NULL;
     firstAdmin = List;
     lastAdmin = firstAdmin;
 };
-void inputAdminList(AdminAccount tempAdminAccount)
-{
+void inputAdminList(AdminAccount tempAdminAccount){
     //Variable bantu dengan type pointer
     adminPointer help, check;
     bool result = true;
@@ -1069,8 +1055,7 @@ void inputAdminList(AdminAccount tempAdminAccount)
     system("PAUSE>NUL");
     system("CLS");
 };
-void showListAdminAccount()
-{
+void showListAdminAccount(){
     adminPointer help;
     help = firstAdmin;
     int no = 0;
@@ -1091,8 +1076,7 @@ void showListAdminAccount()
     system("PAUSE>NUL");
     system("CLS");
 };
-void deleteAdminList(char accountID[16], char PIN[7])
-{
+void deleteAdminList(char accountID[16], char PIN[7]){
     if(isEmptyAdminList())
     {
         cout << "NOT FOUND DATA";
@@ -1143,8 +1127,7 @@ void deleteAdminList(char accountID[16], char PIN[7])
         }
     }
 };
-void updateAdminList(AdminAccount tempAdminAccount)
-{
+void updateAdminList(AdminAccount tempAdminAccount){
     adminPointer update, help, Delete;
     update = (linkListAdmin *)malloc(sizeof(linkListAdmin));
     update -> adminAccounts = tempAdminAccount;
@@ -1177,8 +1160,7 @@ void updateAdminList(AdminAccount tempAdminAccount)
     }
 
 }
-bool isEmptyClientList()
-{
+bool isEmptyClientList(){
     if(firstClient == NULL)
     {
         return true;
@@ -1188,8 +1170,7 @@ bool isEmptyClientList()
         return false;
     }
 };
-void createClientAccount()
-{
+void createClientAccount(){
     ClientAccount temp;
     cout<<"+"<<setw(58)<<setfill('-')<<"+\n";
     cout<<"|" << setfill(' ') << setw(41) << "BANKING SYSTEM APPLICATION" <<setfill(' ')<<setw(17) << "|\n";
@@ -1217,33 +1198,24 @@ void createClientAccount()
     cout<<" No.Telephon\t: ";
     cin.getline(temp.noTelp, sizeof(temp.noTelp));
 }
-void deleteClientAccount()
-{
+void deleteClientAccount(){
 }
-void updateClientAccount()
-{
+void updateClientAccount(){
 }
-void listClientAccount()
-{
+void listClientAccount(){
 }
-void transactionHistory()
-{
+void transactionHistory(){
 }
-void deposito()
-{
+void deposito(){
 }
-//Buat Link List
-void createClientList()
-{
+void createClientList(){
     clientPointer List;
     List = (linkListClient *)malloc(sizeof(linkListClient));
     List = NULL;
     firstClient = List;
     lastClient = firstClient;
 };
-//Input Link List
-void inputClientList(ClientAccount tempClientAccounts)
-{
+void inputClientList(ClientAccount tempClientAccounts){
     //Variable bantu dengan type pointer
     clientPointer help;
     help = (linkListClient *)malloc(sizeof(linkListClient));
@@ -1270,12 +1242,10 @@ void inputClientList(ClientAccount tempClientAccounts)
         }
     }
 };
-void deleteClientList(string accountNumber, string PIN)
-{
+void deleteClientList(string accountNumber, string PIN){
 
 };
-void showListClientAccount()
-{
+void showListClientAccount(){
     clientPointer help;
     help = firstClient;
     int no = 0;
@@ -1296,8 +1266,7 @@ void showListClientAccount()
     system("PAUSE");
     system("CLS");
 };
-bool checkingClientAccount(char accountNumber[16], char PIN[6])
-{
+bool checkingClientAccount(char accountNumber[16], char PIN[6]){
     clientPointer help;
     do
     {
@@ -1313,8 +1282,7 @@ bool checkingClientAccount(char accountNumber[16], char PIN[6])
     }
     while(help != NULL);
 }
-void createQueue()
-{
+void createQueue(){
 
     QueuePointer NewQueue;
     NewQueue = (queue*)malloc(sizeof(queue));
@@ -1322,8 +1290,7 @@ void createQueue()
     firstQueue = NewQueue;
     lastQueue   = NewQueue;
 }//OK
-int isEmptyQueue()
-{
+int isEmptyQueue(){
     if(NULL)
     {
         return true;
@@ -1333,8 +1300,7 @@ int isEmptyQueue()
         return false;
     }
 }//KOSONG
-void enqueue()
-{
+void enqueue(){
     QueuePointer inputData;
     inputData = (queue *)malloc(sizeof(queue));
     //inputData -> dataSave;
@@ -1353,8 +1319,7 @@ void enqueue()
         //lastQueue = inputData;
     }
 }//PUSH DATA
-void dequeue()
-{
+void dequeue(){
     if(isEmptyQueue())
     {
         cout << "DATA NOT FOUND!!!\n";
