@@ -13,13 +13,13 @@ struct History{
 };
 //ADMIN STRUCT
 struct AdminAccount{
+    int accountID = 0;
+    char PIN[7];
     char name[50];
     char address[100];
     char birthDay[20];
     char noKTP[16];
     char noTelp[13];
-    char accountID[16];
-    char PIN[7];
 };
 //ADMIN LINK LIST
 typedef struct linkListAdmin *adminPointer;
@@ -68,9 +68,9 @@ void listAdminAccount();
 bool isEmptyAdminList();
 void createAdminList();
 void inputAdminList(AdminAccount adminAccount);
-bool checkingAdminAccount();
-void updateAdminList(AdminAccount tempAdminAccount, char accountID[16], char PIN[6]);
-void deleteAdminList(char accountID[16], char PIN[7]);
+bool checkingAdminAccount(int accountID, char PIN[7]);
+void updateAdminList(AdminAccount tempAdminAccount);
+void deleteAdminList(int accountID, char PIN[7]);
 void showListAdminAccount();
 //CLIENT METHOD
 void createClientAccount();
@@ -90,7 +90,7 @@ bool isEmptyClientList();
 void createClientList();
 void inputClientList(ClientAccount clientAccount);
 bool checkingClientAccount(char accountNumber[16],char PIN[7]);
-void updateClientList(AdminAccount tempAdminAccount, char accountNumber[16], char PIN[6]);
+void updateClientList(AdminAccount tempAdminAccount);
 void showListClientAccount();
 //OTHER
 int QueueNumber = 0;
@@ -878,15 +878,16 @@ void managerMenu(){
 //MANAGER MENU
 void createAdminAccount(){//OK
     AdminAccount temp;
+    if(isEmptyAdminList()){
+        temp.accountID = 0;
+    }
     cout<<"+"<<setw(58)<<setfill('-')<<"+\n";
     cout<<"|" << setfill(' ') << setw(41) << "BANKING SYSTEM APPLICATION" <<setfill(' ')<<setw(17) << "|\n";
     cout<<"|" << setfill(' ') << setw(35) << "CREATE ACCOUNT" <<setfill(' ')<<setw(23) << "|\n";
     cout<<"|" << setfill(' ') << setw(47) <<"Jl.Veteran No.45, Babasari, Yogyakarta" << setw(11) << "|\n";
     cout<<"+"<<setw(58)<<setfill('-')<<"+\n";
-    cin.ignore();
-    cout<<" ACCOUNT ID\t: ";
-    cin.getline(temp.accountID, sizeof(temp.accountID));
-    cout << endl;
+    cout<<" ACCOUNT ID\t: "<<++temp.accountID;cin.ignore();
+    cout << endl <<endl;
     cout<<" PIN\t\t: ";
     cin.getline(temp.PIN, sizeof(temp.PIN));
     cout << endl;
@@ -907,23 +908,14 @@ void createAdminAccount(){//OK
     GetLoading(1,19);
     inputAdminList(temp);
 }
-void listAdminAccount(){
-    adminPointer help;
-    int no = 0;
-    cout<<"+"<<setw(144)<<setfill('-')<<"+\n";
-    cout<<"|" << setfill(' ') << setw(83) << "BANKING SYSTEM APPLICATION" <<setfill(' ')<<setw(61) << "|\n";
-    cout<<"|" << setfill(' ') << setw(79) << "CREATE ACCOUNT" <<setfill(' ')<<setw(65) << "|\n";
-    cout<<"|" << setfill(' ') << setw(89) <<"Jl.Veteran No.45, Babasari, Yogyakarta" << setw(55) << "|\n";
-    cout<<"+"<<setw(144)<<setfill('-')<<"+\n";
-    cout<<"+"<<setw(4)<<setfill('-')<<"+"<<setw(22)<<setfill('-')<<"+"<<setw(9)<<setfill('-')<<"+"<<setw(18)<<setfill('-')<<"+"<<setw(15)<<setfill('-')<<"+"<<setw(28)<<setfill('-')<<"+"<<setw(17)<<setfill('-')<<"+"<<setw(12)<<setfill('-')<<"+"<<setw(19)<<setfill('-')<<"+\n";
-    cout<<"|"<<"NO |ACCOUNT ID"<<setw(15)<<setfill(' ')<<"|PIN"<<setw(10)<<setfill(' ')<< "|NAME"<<setw(20)<<setfill(' ')<< "|NO KTP"<<setw(16)<<setfill(' ')<< "|ADDRESS"<<setw(30)<<setfill(' ')<< "|BIRTH DAY"<<setw(15)<<setfill(' ')<< "|NO TELP"<<setw(12)<<setfill(' ')<< "|BALANCE"<<setw(12)<<setfill(' ') <<"|\n";
-    cout<<"+"<<setw(4)<<setfill('-')<<"+"<<setw(22)<<setfill('-')<<"+"<<setw(9)<<setfill('-')<<"+"<<setw(18)<<setfill('-')<<"+"<<setw(15)<<setfill('-')<<"+"<<setw(28)<<setfill('-')<<"+"<<setw(17)<<setfill('-')<<"+"<<setw(12)<<setfill('-')<<"+"<<setw(19)<<setfill('-')<<"+\n";
+void listAdminAccount(){//OK
+    showListAdminAccount();
 }
 void deleteAdminAccount(){
     if(isEmptyAdminList()){
         cout << "UNABLE TO SAVE THE DATA, THE STORAGE IS EMPTY";
     }else{
-    char accountID[16];
+    int accountID;
     char PIN[7];
     cout<<"+"<<setw(58)<<setfill('-')<<"+\n";
     cout<<"|" << setfill(' ') << setw(41) << "BANKING SYSTEM APPLICATION" <<setfill(' ')<<setw(17) << "|\n";
@@ -932,7 +924,7 @@ void deleteAdminAccount(){
     cout<<"+"<<setw(58)<<setfill('-')<<"+\n";
     cin.ignore();
     cout<<" ACCOUNT ID\t: ";
-    cin.getline(accountID, sizeof(accountID));
+    cin>>accountID;
     cout << endl;
     cout<<" PIN\t\t: ";
     cin.getline(PIN, sizeof(PIN));
@@ -944,7 +936,7 @@ void updateAdminAccount(){
         cout << "UNABLE TO SAVE THE DATA, THE STORAGE IS EMPTY";
     }else{
     AdminAccount temp;
-    char accountID[16];
+    int accountID;
     char PIN[7];
     char newPIN[7];
     char address[100];
@@ -958,19 +950,19 @@ void updateAdminAccount(){
     cout<<"|" << setfill(' ') << setw(47) <<"Jl.Veteran No.45, Babasari, Yogyakarta" << setw(11) << "|\n";
     cout<<"+"<<setw(58)<<setfill('-')<<"+\n";cin.ignore();
     cout<<" ACCOUNT ID\t: ";
-    cin.getline(accountID, sizeof(accountID));
+    cin>>accountID;
     cout << endl;
     cout<<" PIN\t\t: ";
     cin.getline(PIN, sizeof(PIN));
-     while(check != NULL)
+     while(help -> next != NULL)
     {
-        if((strcmp(check ->adminAccounts.accountID,accountID)==0) && (strcmp(check ->adminAccounts.PIN,PIN)==0)){
+        if((help->adminAccounts.accountID == accountID) && (strcmp(help->adminAccounts.PIN,PIN)==0)){
             result = true;
             break;
         }else{
             result = false;
         }
-        check  = check  -> next;
+        help = help -> next;
     };
     if(result == true){
             system("CLS");
@@ -989,14 +981,14 @@ void updateAdminAccount(){
     cout << endl;
     cout<<" NO TELP\t: ";
     cin.getline(noTelp, sizeof(noTelp));
-    strcpy(temp.accountID,check->adminAccounts.accountID);
-    strcpy(temp.PIN,newPIN);
+    temp.accountID = check->adminAccounts.accountID;
+    strcpy(temp.PIN,PIN);
     strcpy(temp.address,address);
     strcpy(temp.noTelp,noTelp);
     strcpy(temp.name,check->adminAccounts.name);
     strcpy(temp.birthDay, check->adminAccounts.birthDay);
     strcpy(temp.noKTP, check->adminAccounts.noKTP);
-    updateAdminList(temp,accountID,PIN);
+    updateAdminList(temp);
         }else {
         cout << "\n\n UNABLE TO SAVE THE DATA, ";
         }
@@ -1039,58 +1031,44 @@ void inputAdminList(AdminAccount tempAdminAccount){
         bool resultAccountID = true;
         bool resultNoTelp = true;
         bool resultNoKTP = true;
-        if((strcmp(tempAdminAccount.accountID,firstAdmin -> adminAccounts.accountID)==0)||(strcmp(tempAdminAccount.noTelp,firstAdmin -> adminAccounts.noTelp)==0)||(strcmp(tempAdminAccount.noKTP,firstAdmin -> adminAccounts.noKTP)==0)){
-        if((strcmp(tempAdminAccount.accountID,firstAdmin -> adminAccounts.accountID)==0)){
-                resultAccountID = false;
-        }if((strcmp(tempAdminAccount.noTelp,firstAdmin -> adminAccounts.noTelp)==0)){
-
-            resultNoTelp = false;
-        }if((strcmp(tempAdminAccount.noKTP,firstAdmin -> adminAccounts.noKTP)==0)){
-
-                resultNoKTP = false;
+        if((tempAdminAccount.accountID == firstAdmin -> adminAccounts.accountID)||(strcmp(tempAdminAccount.noTelp,firstAdmin -> adminAccounts.noTelp)==0)||(strcmp(tempAdminAccount.noKTP,firstAdmin -> adminAccounts.noKTP)==0)){
+        if((tempAdminAccount.accountID == firstAdmin -> adminAccounts.accountID)){
+           cout << "\n\n CANT CREATE THE ACCOUNT, USERNAME ALREADY USED\n";
         }
-        if(resultAccountID == false){
-        cout << "\n\n CANT CREATE THE ACCOUNT, ACCOUNT ID ALREADY USED\n";
-        }if(resultNoTelp == false){
-        cout << "\n\n CANT CREATE THE ACCOUNT, TELP NUMBER ALREADY USED\n";
-        }if(resultNoKTP == false){
-        cout << "\n\n CANT CREATE THE ACCOUNT, NO KTP ALREADY USED\n";
+        if((strcmp(tempAdminAccount.noTelp,firstAdmin -> adminAccounts.noTelp)==0)){
+
+            cout << "\n\n CANT CREATE THE ACCOUNT, TELP NUMBER ALREADY USED\n";
         }
-        }else if((strcmp(tempAdminAccount.accountID,lastAdmin -> adminAccounts.accountID)==0)||(strcmp(tempAdminAccount.noTelp,lastAdmin -> adminAccounts.noTelp)==0)||(strcmp(tempAdminAccount.noKTP,lastAdmin-> adminAccounts.noKTP)==0)){
-        if((strcmp(tempAdminAccount.accountID,lastAdmin -> adminAccounts.accountID)==0)){
+        if((strcmp(tempAdminAccount.noKTP,firstAdmin -> adminAccounts.noKTP)==0)){
 
-                resultAccountID = false;
-        }if((strcmp(tempAdminAccount.noTelp,lastAdmin -> adminAccounts.noTelp)==0)){
-
-            resultNoTelp = false;
-        }if((strcmp(tempAdminAccount.noKTP,lastAdmin -> adminAccounts.noKTP)==0)){
-
-         resultNoKTP  = false;
+            cout << "\n\n CANT CREATE THE ACCOUNT, NO KTP ALREADY USED\n";
         }
-        if(resultAccountID == false){
-        cout << "\n\n CANT CREATE THE ACCOUNT, ACCOUNT ID ALREADY USED\n";
-        }if(resultNoTelp == false){
-        cout << "\n\n CANT CREATE THE ACCOUNT, TELP NUMBER ALREADY USED\n";
-        }if(resultNoKTP == false){
-        cout << "\n\n CANT CREATE THE ACCOUNT, NO KTP ALREADY USED\n";
+        }else if((tempAdminAccount.accountID == lastAdmin -> adminAccounts.accountID)||(strcmp(tempAdminAccount.noTelp,lastAdmin -> adminAccounts.noTelp)==0)||(strcmp(tempAdminAccount.noKTP,lastAdmin-> adminAccounts.noKTP)==0)){
+        if(tempAdminAccount.accountID ==lastAdmin -> adminAccounts.accountID){
+            cout << "\n\n CANT CREATE THE ACCOUNT, USERNAME ALREADY USED\n";
+        }
+        if((strcmp(tempAdminAccount.noTelp,lastAdmin -> adminAccounts.noTelp)==0)){
+
+            cout << "\n\n CANT CREATE THE ACCOUNT, TELP NUMBER ALREADY USED\n";
+        }
+        if((strcmp(tempAdminAccount.noKTP,lastAdmin -> adminAccounts.noKTP)==0)){
+
+           cout << "\n\n CANT CREATE THE ACCOUNT, NO KTP ALREADY USED\n";
         }
         }else{
-        while(help -> next!= NULL){
-            if((strcmp(tempAdminAccount.accountID,help -> adminAccounts.accountID)==0)||(strcmp(tempAdminAccount.noTelp,help -> adminAccounts.noTelp)==0)||(strcmp(tempAdminAccount.noKTP,help -> adminAccounts.noKTP)==0)){
-            if((strcmp(tempAdminAccount.accountID,help -> adminAccounts.accountID)==0)){
+        while(help -> next != NULL){
+            if(tempAdminAccount.accountID == help -> adminAccounts.accountID){
                 resultAccountID = false;
             }if(strcmp(tempAdminAccount.noTelp,help -> adminAccounts.noTelp)==0){
                 resultNoTelp = false;
             }if(strcmp(tempAdminAccount.noKTP,help -> adminAccounts.noKTP)==0){
-                resultNoKTP  = false;
+                resultNoTelp = false;
             }
-            break;
-                  }
             help = help -> next;
         }
         if((resultAccountID == false)||(resultNoTelp == false)||(resultNoKTP == false)){
         if(resultAccountID == false){
-        cout << "\n\n CANT CREATE THE ACCOUNT, ACCOUNT ID ALREADY USED\n";
+        cout << "\n\n CANT CREATE THE ACCOUNT, USERNAME ALREADY USED\n";
         }if(resultNoTelp == false){
         cout << "\n\n CANT CREATE THE ACCOUNT, TELP NUMBER ALREADY USED\n";
         }if(resultNoKTP == false){
@@ -1118,7 +1096,7 @@ void showListAdminAccount(){
     int no = 0;
     cout<<"+"<<setw(130)<<setfill('-')<<"+\n";
     cout<<"|" << setfill(' ') << setw(77) << "BANKING SYSTEM APPLICATION" <<setfill(' ')<<setw(53) << "|\n";
-    cout<<"|" << setfill(' ') << setw(70) << "LIST ACCOUNT" <<setfill(' ')<<setw(60) << "|\n";
+    cout<<"|" << setfill(' ') << setw(70) << "LIST  ACCOUNT" <<setfill(' ')<<setw(60) << "|\n";
     cout<<"|" << setfill(' ') << setw(83) <<"Jl.Veteran No.45, Babasari, Yogyakarta" << setw(47) << "|\n";
     cout<<"+"<<setw(130)<<setfill('-')<<"+\n";
     cout<<"+"<<setw(4)<<setfill('-')<<"+"<<setw(22)<<setfill('-')<<"+"<<setw(11)<<setfill('-')<<"+"<<setw(18)<<setfill('-')<<"+"<<setw(15)<<setfill('-')<<"+"<<setw(28)<<setfill('-')<<"+"<<setw(17)<<setfill('-')<<"+"<<setw(15)<<setfill('-')<<"+\n";
@@ -1133,20 +1111,22 @@ void showListAdminAccount(){
     system("\nPAUSE");
     system("CLS");
 };
-void deleteAdminList(char accountID[16], char PIN[7]){
+void deleteAdminList(int accountID, char PIN[7]){
     if(isEmptyAdminList())
     {
         cout << "SORRT CANT DELETE THE DATA, NOT FOUND THE DATA";
-    }else if((firstAdmin->next == NULL) &&(strcmp(firstAdmin -> adminAccounts.accountID, accountID)==0) && (strcmp(firstAdmin -> adminAccounts.PIN, PIN)==0))
+    }else if (accountID > lastAdmin->adminAccounts.accountID){
+            cout << "SORRT CANT DELETE THE DATA, NOT FOUND THE DATA";
+    }else{
+    if((firstAdmin->next == NULL) &&(firstAdmin -> adminAccounts.accountID == accountID) && (strcmp(firstAdmin -> adminAccounts.PIN, PIN)==0))
             {
                 adminPointer Delete;
                 Delete = firstAdmin;
                 free(Delete);
                 firstAdmin = NULL;
                 lastAdmin = firstAdmin;
-                GetLoading(1,11);
-                cout << "\n\n\n DELETE DATA SUCCESFULLY";
-            }else if((firstAdmin->next == lastAdmin) &&(strcmp(lastAdmin -> adminAccounts.accountID, accountID)==0) && (strcmp(lastAdmin -> adminAccounts.PIN, PIN)==0))
+                cout << "\n\n DELETE DATA SUCCESFULLY";
+            }else if((firstAdmin->next == lastAdmin) &&(lastAdmin -> adminAccounts.accountID == accountID) && (strcmp(lastAdmin -> adminAccounts.PIN, PIN)==0))
             {
                 adminPointer Delete;
                 Delete = lastAdmin;
@@ -1154,9 +1134,8 @@ void deleteAdminList(char accountID[16], char PIN[7]){
                 lastAdmin = firstAdmin;
                 firstAdmin -> next = NULL;
                 firstAdmin -> prev = NULL;
-                GetLoading(1,11);
-                cout << "\n\n\n DELETE DATA SUCCESFULLY";
-            }else if((firstAdmin->next == lastAdmin) &&(strcmp(firstAdmin -> adminAccounts.accountID, accountID)==0) && (strcmp(firstAdmin -> adminAccounts.PIN, PIN)==0))
+                cout << "\n\n DELETE DATA SUCCESFULLY";
+            }else if((firstAdmin->next == lastAdmin) &&(firstAdmin -> adminAccounts.accountID == accountID) && (strcmp(firstAdmin -> adminAccounts.PIN, PIN)==0))
             {
                 adminPointer Delete;
                 Delete = firstAdmin;
@@ -1164,20 +1143,18 @@ void deleteAdminList(char accountID[16], char PIN[7]){
                 firstAdmin = lastAdmin;
                 firstAdmin -> next = NULL;
                 firstAdmin -> prev = NULL;
-                GetLoading(1,11);
-                cout << "\n\n\n DELETE DATA SUCCESFULLY";
+                cout << "\n\n DELETE DATA SUCCESFULLY";
             }
-            else if((strcmp(firstAdmin -> adminAccounts.accountID, accountID)==0) && (strcmp(firstAdmin -> adminAccounts.PIN, PIN)==0))
+            else if((firstAdmin -> adminAccounts.accountID == accountID) && (strcmp(firstAdmin -> adminAccounts.PIN, PIN)==0))
             {
                 adminPointer Delete;
                 Delete = firstAdmin;
                 firstAdmin = firstAdmin -> next;
                 firstAdmin -> prev = NULL;
                 free(Delete);
-                GetLoading(1,11);
-                cout << "\n\n\n DELETE DATA SUCCESFULLY";
+                cout << "\n\n DELETE DATA SUCCESFULLY";
             }
-            else if((strcmp(lastAdmin -> adminAccounts.accountID, accountID)==0) && (strcmp(lastAdmin -> adminAccounts.PIN, PIN)==0))
+            else if((lastAdmin -> adminAccounts.accountID == accountID) && (strcmp(lastAdmin -> adminAccounts.PIN, PIN)==0))
             {
                 adminPointer Delete, help;
                 Delete = lastAdmin;
@@ -1185,8 +1162,7 @@ void deleteAdminList(char accountID[16], char PIN[7]){
                 lastAdmin = help;
                 lastAdmin -> next = NULL;
                 free(Delete);
-                GetLoading(1,11);
-                cout << "\n\n\n DELETE DATA SUCCESFULLY";
+                cout << "\n\n DELETE DATA SUCCESFULLY";
             }
             else
             {
@@ -1194,7 +1170,7 @@ void deleteAdminList(char accountID[16], char PIN[7]){
         help = firstAdmin;
         bool result = true;
         while(help->next != NULL ){
-            if((strcmp(help -> adminAccounts.accountID, accountID)==0) && (strcmp(help -> adminAccounts.PIN, PIN)==0))
+            if((help -> adminAccounts.accountID == accountID) && (strcmp(help -> adminAccounts.PIN, PIN)==0))
             {
                 result = true;
                 break;
@@ -1211,55 +1187,47 @@ void deleteAdminList(char accountID[16], char PIN[7]){
                 help -> next = Delete -> next;
                 Delete -> next -> prev = Delete -> prev;
                 free(Delete);
-                GetLoading(1,11);
-                cout << "\n\n\n DELETE DATA SUCCESFULLY";
+                GetLoading(1,5);
+                cout << "\n\n DELETE DATA SUCCESFULLY";
         }
-        else{
-            cout << "SORRT CANT DELETE THE DATA, NOT FOUND THE DATA";
-        }
+    }
     }
     cout<<endl;
     system(" PAUSE");
     system("CLS");
 };
-void updateAdminList(AdminAccount tempAdminAccount,char accountID[16], char PIN[6]){
-    adminPointer update, help, Delete, check;
-    check = firstAdmin;
+void updateAdminList(AdminAccount tempAdminAccount){
+    adminPointer update, help, Delete, help2;
     update = (linkListAdmin *)malloc(sizeof(linkListAdmin));
     update -> adminAccounts = tempAdminAccount;
     update-> next = NULL;
     update -> prev = NULL;
     bool result = true;
-    if((firstAdmin == lastAdmin)&&(firstAdmin = lastAdmin)&&(strcmp(firstAdmin->adminAccounts.accountID,accountID)==0) && (strcmp(firstAdmin->adminAccounts.PIN,PIN)==0)){
+    if((firstAdmin->adminAccounts.accountID == tempAdminAccount.accountID) && (strcmp(firstAdmin->adminAccounts.PIN,tempAdminAccount.PIN)==0)){
+        help2 = firstAdmin->next;
+        help -> next = help2;
+        help2 -> prev = help;
         Delete = firstAdmin;
+        firstAdmin = help;
         free(Delete);
-        firstAdmin = update;
     }else{
-    while(check != NULL)
+    while(help -> next != NULL)
     {
-        if((strcmp(check ->adminAccounts.accountID,accountID)==0) && (strcmp(check->adminAccounts.PIN,PIN)==0)){
+        if((help -> next ->adminAccounts.accountID == tempAdminAccount.accountID) && (strcmp(help -> next->adminAccounts.PIN,tempAdminAccount.PIN)==0)){
             result = true;
             break;
         }else{
             result = false;
         }
-        check = check -> next;
+        help = help -> next;
     };
-    if(result == true && (firstAdmin -> next == lastAdmin || check == lastAdmin))
+    if(result == true)
     {
-        Delete = check;
-        help = check->prev;
-        free(Delete);
-        help->next = NULL;
-        help->next = update;
-        update->prev = help;
-    }else if(result == true){
-        Delete = check;
-        help = check->prev;
-        help->next = update;
-        update->prev = help;
-        update -> next = check ->next;
-        check -> next -> prev = update;
+        adminPointer Delete, tempUpdate;
+        Delete = help;
+        tempUpdate = help -> next;
+        update -> next = tempUpdate;
+        tempUpdate -> prev = update;
         free(Delete);
     }
     else
