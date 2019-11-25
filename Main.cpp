@@ -68,7 +68,6 @@ void listAdminAccount();
 bool isEmptyAdminList();
 void createAdminList();
 void inputAdminList(AdminAccount adminAccount);
-bool checkingAdminAccount();
 void updateAdminList(AdminAccount tempAdminAccount, char accountID[16], char PIN[6]);
 void deleteAdminList(char accountID[16], char PIN[7]);
 void showListAdminAccount();
@@ -89,7 +88,6 @@ void allTransactionHistory();
 bool isEmptyClientList();
 void createClientList();
 void inputClientList(ClientAccount clientAccount);
-bool checkingClientAccount(char accountNumber[16],char PIN[7]);
 void updateClientList(AdminAccount tempAdminAccount, char accountNumber[16], char PIN[6]);
 void showListClientAccount();
 //OTHER
@@ -334,9 +332,12 @@ void GetDateSystem(){
 void adminMenu(){
     int menu, x;
     bool running;
-    string tempIDAdmin;
-    string tempPassword;
+    char tempIDAdmin[16];
+    char tempPIN[7];
     enum menu {CREATE = 1, UPDATE, DELETES, LIST, DEPOSITO, HISTORY};
+    if(isEmptyAdminList()){
+        cout << "NOT FOUND ADMIN ACCOUNT, PLEASE REGISTER NOW!!!\n";
+    }else{
     GetPosition(57,8);
     cout << "+"<<setw(58)<<setfill('-')<<"+";
     GetPosition(57,9);
@@ -347,14 +348,37 @@ void adminMenu(){
     cout << "|" << setfill(' ') << setw(47) <<"Jl.Veteran No.45, Babasari, Yogyakarta" << setw(11) << "|";
     GetPosition(57,12);
     cout << "+"<<setw(58)<<setfill('-')<<"+";
+    cin.ignore();
     GetPosition(70,14);
     cout << "  ID ADMIN  : ";
-    getline(cin, tempIDAdmin);
+    cin.getline(tempIDAdmin, sizeof(tempIDAdmin));
     GetPosition(70,16);
-    cout << "  PASSWORD  : ";
-    getline(cin, tempPassword);
+    cout << "  PIN       : ";
+    cin.getline(tempPIN, sizeof(tempPIN));
+    bool result = false;
+    if((strcmp(firstAdmin->adminAccounts.accountID,tempIDAdmin)==0)&&(strcmp(firstAdmin->adminAccounts.PIN,tempPIN)==0)){
+            result = true;
+    }else{
+    adminPointer help;
+    help = firstAdmin;
+    while(help -> next!= NULL){
+        if((strcmp(help->adminAccounts.accountID,tempIDAdmin)==0)&&(strcmp(help->adminAccounts.PIN,tempPIN)==0)){
+            result = true;
+        }
+        help = help->next;
+    }
+    }
+    if(result == false){
+    GetPosition(75,20);
+    cout<<"LOGIN FAILED!!!\n";
+    system("PAUSE>NUL");
     system("CLS");
     cin.clear();
+    }else{
+    GetPosition(75,20);
+    cout<<"LOGIN SUCCESS!!!\n";
+    system("PAUSE>NUL");
+    system("CLS");
     do
     {
         x = 13;
@@ -497,14 +521,19 @@ void adminMenu(){
         }
     }
     while(menu > 0 && menu < 7);
-
+    }
+    }
+    system("CLS");
 }
 void clientMenu(){
     int menu, x;
     bool running;
-    string tempIDAdmin;
-    string tempPassword;
+    char tempIDClient[16];
+    char tempPIN[7];
     enum menu {SALDO = 1, TRANSFER, WITHDRAW,CHANGE_PIN,HISTORY};
+        if(isEmptyAdminList()){
+        cout << "NOT FOUND CLIENT ACCOUNT, PLEASE REGISTER NOW!!!\n";
+    }else{
     GetPosition(57,8);
     cout << "+"<<setw(58)<<setfill('-')<<"+";
     GetPosition(57,9);
@@ -515,12 +544,36 @@ void clientMenu(){
     cout << "|" << setfill(' ') << setw(47) <<"Jl.Veteran No.45, Babasari, Yogyakarta" << setw(11) << "|";
     GetPosition(57,12);
     cout << "+"<<setw(58)<<setfill('-')<<"+";
+    cin.ignore();
     GetPosition(70,14);
-    cout << "  USERNAME  : ";
-    getline(cin, tempIDAdmin);
+    cout << "  ACCOUNT NO  : ";
+    cin.getline(tempIDClient, sizeof(tempIDClient));
     GetPosition(70,16);
-    cout << "  PASSWORD  : ";
-    getline(cin, tempPassword);
+    cout << "  PIN         : ";
+    cin.getline(tempPIN, sizeof(tempPIN));
+    bool result = false;
+    if((strcmp(firstClient->clientAccounts.accountNumber,tempIDClient)==0)&&(strcmp(firstClient->clientAccounts.PIN,tempPIN)==0)){
+            result = true;
+    }else{
+    clientPointer help;
+    help = firstClient;
+    while(help -> next!= NULL){
+        if((strcmp(help->clientAccounts.accountNumber,tempIDClient)==0)&&(strcmp(help->clientAccounts.PIN,tempPIN)==0)){
+            result = true;
+        }
+        help = help->next;
+    }
+    }
+    if(result == false){
+    GetPosition(75,20);
+    cout<<"LOGIN FAILED!!!\n";
+    system("PAUSE>NUL");
+    system("CLS");
+    cin.clear();
+    }else{
+    GetPosition(75,20);
+    cout<<"LOGIN SUCCESS!!!\n";
+    system("PAUSE>NUL");
     system("CLS");
     do
     {
@@ -661,7 +714,8 @@ void clientMenu(){
         }
     }
     while(menu > 0 && menu < 7);
-
+    }
+    }
 }
 void infoMenu(){
     cin.clear();
@@ -1314,10 +1368,7 @@ void updateClientAccount(){
 }
 void listClientAccount(){
 }
-void transactionHistory(){
-}
-void deposito(){
-}
+//CLIENT LINK LIST
 void createClientList(){
     clientPointer List;
     List = (linkListClient *)malloc(sizeof(linkListClient));
@@ -1397,22 +1448,169 @@ void showListClientAccount(){
     system("PAUSE");
     system("CLS");
 };
-bool checkingClientAccount(char accountNumber[16], char PIN[6]){
-    clientPointer help;
-    do
-    {
-        if((strcmp(accountNumber,help -> clientAccounts.accountNumber)==0) && (strcmp(PIN,help -> clientAccounts.PIN)==0))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-        help = help -> next;
-    }
-    while(help != NULL);
+void updateClientList(ClientAccount tempClientAccount, char accountNumber[16], char PIN[7]){
 }
+//CLIENT MENU
+void transactionHistory(){
+}
+void cekSaldo(){
+    if(isEmptyClientList()){
+        cout << "UNABLE TO SAVE THE DATA, THE STORAGE IS EMPTY";
+    }else{
+    ClientAccount temp;
+    char accountNumber[16];
+    char PIN[7];
+    char newPIN[7];
+    char address[100];
+    char noTelp[13];
+    clientPointer check, help;
+    check = firstClient;
+    bool result = true;
+    cout<<"+"<<setw(58)<<setfill('-')<<"+\n";
+    cout<<"|" << setfill(' ') << setw(41) << "BANKING SYSTEM APPLICATION" <<setfill(' ')<<setw(17) << "|\n";
+    cout<<"|" << setfill(' ') << setw(35) << " CHECK  SALDO" <<setfill(' ')<<setw(23) << "|\n";
+    cout<<"|" << setfill(' ') << setw(47) <<"Jl.Veteran No.45, Babasari, Yogyakarta" << setw(11) << "|\n";
+    cout<<"+"<<setw(58)<<setfill('-')<<"+\n";cin.ignore();
+    cout<<" ACCOUNT NO\t: ";
+    cin.getline(accountNumber, sizeof(accountNumber));
+    cout << endl;
+    cout<<" PIN\t\t: ";
+    cin.getline(PIN, sizeof(PIN));
+     while(check != NULL)
+    {
+        if((strcmp(check ->clientAccounts.accountNumber,accountNumber)==0) && (strcmp(check ->clientAccounts.PIN,PIN)==0)){
+            result = true;
+            break;
+        }else{
+            result = false;
+        }
+        check  = check  -> next;
+    };
+    if(result == true){
+            system("CLS");
+    cout<<"+"<<setw(58)<<setfill('-')<<"+\n";
+    cout<<"|" << setfill(' ') << setw(41) << "BANKING SYSTEM APPLICATION" <<setfill(' ')<<setw(17) << "|\n";
+    cout<<"|" << setfill(' ') << setw(35) << " CHECK  SALDO" <<setfill(' ')<<setw(23) << "|\n";
+    cout<<"|" << setfill(' ') << setw(47) <<"Jl.Veteran No.45, Babasari, Yogyakarta" << setw(11) << "|\n";
+    cout<<"+"<<setw(58)<<setfill('-')<<"+\n";cin.ignore();
+    cout<<" ACCOUNT NO\t: ";
+    cout << endl << endl;
+    cout<<" NAME\t\t: ";
+    cout << endl << endl;
+     cout<<" SALDO\t\t: Rp ";
+    }else{
+    cout << "\n\n CANT FOUND ACCOUNT NUMBER\n";
+    }
+    }
+}
+void withDraw(){
+        if(isEmptyClientList()){
+        cout << "UNABLE TO SAVE THE DATA, THE STORAGE IS EMPTY";
+    }else{
+    ClientAccount temp;
+    char accountNumber[16];
+    char PIN[7];
+    char newPIN[7];
+    char address[100];
+    char noTelp[13];
+    clientPointer check, help;
+    check = firstClient;
+    bool result = true;
+    cout<<"+"<<setw(58)<<setfill('-')<<"+\n";
+    cout<<"|" << setfill(' ') << setw(41) << "BANKING SYSTEM APPLICATION" <<setfill(' ')<<setw(17) << "|\n";
+    cout<<"|" << setfill(' ') << setw(35) << "WITH DRAW" <<setfill(' ')<<setw(23) << "|\n";
+    cout<<"|" << setfill(' ') << setw(47) <<"Jl.Veteran No.45, Babasari, Yogyakarta" << setw(11) << "|\n";
+    cout<<"+"<<setw(58)<<setfill('-')<<"+\n";cin.ignore();
+    cout<<" ACCOUNT NO\t: ";
+    cin.getline(accountNumber, sizeof(accountNumber));
+    cout << endl;
+    cout<<" PIN\t\t: ";
+    cin.getline(PIN, sizeof(PIN));
+     while(check != NULL)
+    {
+        if((strcmp(check ->clientAccounts.accountNumber,accountNumber)==0) && (strcmp(check ->clientAccounts.PIN,PIN)==0)){
+            result = true;
+            break;
+        }else{
+            result = false;
+        }
+        check  = check  -> next;
+    };
+    if(result == true){
+            system("CLS");
+    cout<<"+"<<setw(58)<<setfill('-')<<"+\n";
+    cout<<"|" << setfill(' ') << setw(41) << "BANKING SYSTEM APPLICATION" <<setfill(' ')<<setw(17) << "|\n";
+    cout<<"|" << setfill(' ') << setw(35) << "WITH DRAW" <<setfill(' ')<<setw(23) << "|\n";
+    cout<<"|" << setfill(' ') << setw(47) <<"Jl.Veteran No.45, Babasari, Yogyakarta" << setw(11) << "|\n";
+    cout<<"+"<<setw(58)<<setfill('-')<<"+\n";cin.ignore();
+    cout<<" ACCOUNT NO\t: ";
+    cout << endl << endl;
+    cout<<" NAME\t\t: ";
+    cout << endl << endl;
+    cout<<" SALDO\t\t: Rp ";
+    cout << endl << endl;
+    cout<<" JUMLAH\t\t: Rp ";
+    }else{
+    cout << "\n\n CANT FOUND ACCOUNT NUMBER\n";
+    }
+    }
+    }
+void changePIN(){
+                if(isEmptyClientList()){
+        cout << "UNABLE TO SAVE THE DATA, THE STORAGE IS EMPTY";
+    }else{
+    ClientAccount temp;
+    char accountNumber[16];
+    char PIN[7];
+    char newPIN[7];
+    char address[100];
+    char noTelp[13];
+    clientPointer check, help;
+    check = firstClient;
+    bool result = true;
+    cout<<"+"<<setw(58)<<setfill('-')<<"+\n";
+    cout<<"|" << setfill(' ') << setw(41) << "BANKING SYSTEM APPLICATION" <<setfill(' ')<<setw(17) << "|\n";
+    cout<<"|" << setfill(' ') << setw(35) << "CHANGE PIN" <<setfill(' ')<<setw(23) << "|\n";
+    cout<<"|" << setfill(' ') << setw(47) <<"Jl.Veteran No.45, Babasari, Yogyakarta" << setw(11) << "|\n";
+    cout<<"+"<<setw(58)<<setfill('-')<<"+\n";cin.ignore();
+    cout<<" ACCOUNT NO\t: ";
+    cin.getline(accountNumber, sizeof(accountNumber));
+    cout << endl;
+    cout<<" PIN\t\t: ";
+    cin.getline(PIN, sizeof(PIN));
+     while(check != NULL)
+    {
+        if((strcmp(check ->clientAccounts.accountNumber,accountNumber)==0) && (strcmp(check ->clientAccounts.PIN,PIN)==0)){
+            result = true;
+            break;
+        }else{
+            result = false;
+        }
+        check  = check  -> next;
+    };
+    if(result == true){
+            system("CLS");
+    cout<<"+"<<setw(58)<<setfill('-')<<"+\n";
+    cout<<"|" << setfill(' ') << setw(41) << "BANKING SYSTEM APPLICATION" <<setfill(' ')<<setw(17) << "|\n";
+    cout<<"|" << setfill(' ') << setw(35) << "WITH DRAW" <<setfill(' ')<<setw(23) << "|\n";
+    cout<<"|" << setfill(' ') << setw(47) <<"Jl.Veteran No.45, Babasari, Yogyakarta" << setw(11) << "|\n";
+    cout<<"+"<<setw(58)<<setfill('-')<<"+\n";cin.ignore();
+    cout<<" ACCOUNT NO\t: ";
+    cout << endl << endl;
+    cout<<" OLD PIN\t\t: ";
+    cout << endl << endl;
+    cout<<" NEW PIN\t\t: ";
+    }else{
+    cout << "\n\n CANT FOUND ACCOUNT NUMBER\n";
+    }
+    }
+}
+void transfer(){
+}
+//ADMIN MENU
+void deposito(){
+}
+//QUEUE
 void createQueue(){
     QueuePointer NewQueue;
     NewQueue = (queue*)malloc(sizeof(queue));
@@ -1473,7 +1671,8 @@ void enqueue(QueueData newData){
     }
 system("PAUSE");
 system("CLS");
-}//PUSH DATA
+}
+//PUSH DATA
 void dequeue(){
     if(isEmptyQueue())
     {
