@@ -4,13 +4,6 @@
 #include <ctime>
 #include <mmsystem.h>
 using namespace std;
-typedef int Queue;
-typedef struct queue *QueuePointer;
-struct queue{
-    Queue no;
-    QueuePointer next;
-};
-QueuePointer firstQueue, lastQueue ;
 struct History{
     char accountNumber[13];
     char typeOfTransaction[10];
@@ -54,6 +47,18 @@ struct linkListClient{
     clientPointer prev;
 };
 clientPointer firstClient, lastClient;
+typedef int QueueInfo;
+struct QueueData{
+    QueueInfo no = 0;
+    char accountNumber[16];
+    char PIN[7];
+};
+typedef struct queue *QueuePointer;
+struct queue{
+    QueueData queueSave;
+    QueuePointer next;
+};
+QueuePointer firstQueue, lastQueue ;
 //ADMIN METHOD
 void createAdminAccount();
 void deleteAdminAccount();
@@ -104,11 +109,11 @@ void managerMenu();
 void deposito();
 void transactionHistory();
 //QUEUE
+void addEnqueue();
 void createQueue();
 int isEmptyQueue();
 void enqueue();
 void dequeue();
-void printQueue();
 //STACK
 int isEmptyStack();
 void createStack();
@@ -172,11 +177,13 @@ void mainMenu(){
             GetPosition(75,32);
             cout<<"+"<<setw(21)<<setfill('=')<<"+";
             GetPosition(75,33);
-            cout<<"|"<<setw(17)<<setfill(' ') <<"STATUS ANTRIAN"<<setw(4)<<"|";
+            cout<<"|"<<setw(17)<<setfill(' ') <<"  NEXT  |  JUMLAH "<<setw(3)<<"|";
             GetPosition(75,34);
             cout<<"+"<<setw(21)<<setfill('=')<<"+";
-            GetPosition(86,35);
-            cout << QueueNumber;
+            GetPosition(80,35);
+            cout << ++QueueNumber;
+            GetPosition(90,35);
+            cout << ++QueueNumber;
             GetPosition(84,29);
             system("PAUSE>NUL"); //Pause Tanpa Pesan
             if(GetAsyncKeyState(VK_DOWN)) // Action ketika arah bawah di KLIK
@@ -240,7 +247,8 @@ void mainMenu(){
             else if(GetAsyncKeyState(VK_INSERT))
             {
                 PlaySound(TEXT("QueueSound.wav"), NULL, SND_SYNC);
-                QueueNumber++;
+                system("CLS");
+                addEnqueue();
             }
             else if(GetAsyncKeyState(VK_RETURN) || GetAsyncKeyState(VK_RIGHT))
             {
@@ -1392,7 +1400,6 @@ bool checkingClientAccount(char accountNumber[16], char PIN[6]){
     while(help != NULL);
 }
 void createQueue(){
-
     QueuePointer NewQueue;
     NewQueue = (queue*)malloc(sizeof(queue));
     NewQueue = NULL;
@@ -1400,7 +1407,7 @@ void createQueue(){
     lastQueue   = NewQueue;
 }//OK
 int isEmptyQueue(){
-    if(NULL)
+    if(firstQueue == NULL)
     {
         return true;
     }
@@ -1409,59 +1416,95 @@ int isEmptyQueue(){
         return false;
     }
 }//KOSONG
-void enqueue(){
+void enqueue(QueueData newData){
+    clientPointer help;
     QueuePointer inputData;
+    bool result = false;
+    help = firstClient;
+    if(isEmptyClientList()){
+        cout << "\n\n SORRY CANT FOUND THE CLIENT ACCOUNT, CLIENT ACCOUNT IS EMPTY\n";
+    }
+    while(help->next!=NULL){
+        if((strcmp(help->clientAccounts.accountNumber, newData.accountNumber)==0) && (strcmp(help->clientAccounts.PIN, newData.PIN)==0)){
+            result = true;
+        }
+        help = help->next;
+    }
+    if(result == true){
     inputData = (queue *)malloc(sizeof(queue));
-    //inputData -> dataSave;
+    inputData -> queueSave = newData;
     inputData -> next = NULL;
-    //inputData -> prev = NULL;
     if(isEmptyQueue())
     {
         firstQueue = inputData;
         lastQueue   = firstQueue;
-        system("PAUSE");
     }
     else
     {
-        //lastQueue -> next = inputData;
-        //inputData -> prev = lastQueue;
-        //lastQueue = inputData;
+        if(firstQueue == lastQueue)
+        {
+            firstQueue -> next = inputData;
+            lastQueue = inputData;
+            lastQueue -> next = NULL;
+        }
+        else
+        {
+            lastQueue->next = inputData;
+            lastQueue =inputData;
+            lastQueue -> next = NULL;
+        }
     }
+    }else{
+    cout << "\n\n NOT FOUND DATA, PLEASE REGISTER THE ACCOUNT!!!\n";
+    }
+system("PAUSE");
+system("CLS");
 }//PUSH DATA
 void dequeue(){
     if(isEmptyQueue())
     {
-        cout << "DATA NOT FOUND!!!\n";
+        cout << "DATA NOT FOUND, QUEUE IS EMPTY!!!\n";
         system("PAUSE");
         system("CLS");
 
-        /**else{
-        cout << "                        INFO DEQUEUE\n";
-        cout << "+=======+====================+===========================+\n";
-        cout << "|  ID   |        NAMA        |          KEPERLUAN        |\n";
-        cout << "+=======+====================+===========================+\n";
-        typeptr help;
-        if(top == first){
-        	enqueueHistory(top -> dataSave);
-        	cout <<"|" << setw(5) << first -> dataSave.no <<setw(3)<<"|"<< setw(12) << first -> dataSave.name << setw(9)<<"|";
-            cout << setw(18) << first -> dataSave.kepentingan <<setw(10)<<"|"<<endl;
-        	free(first);
-        	first = NULL;
-        	top   = first;
+        }else{
+        QueuePointer help;
+        if(lastQueue == firstQueue){
+        	free(firstQueue);
+        	firstQueue = NULL;
+        	lastQueue   = firstQueue;
         	cout << "ALL DATA DELETED!!!\n";
         	system("PAUSE");
         	system("CLS");
         }else{
-        	help = first -> next;
-        	enqueueHistory(first -> dataSave);
-        	cout <<"|" << setw(5) << first -> dataSave.no <<setw(3)<<"|"<< setw(12) << first -> dataSave.name << setw(9)<<"|";
-            cout << setw(18) << first -> dataSave.kepentingan <<setw(10)<<"|"<<endl;
-        	free(first);
-        	first = help;
-        	first -> prev = NULL;
-        	first -> next = help -> next;
-        }*/
+        	help = firstQueue -> next;
+        	free(firstQueue);
+        	firstQueue = help;
+        	firstQueue -> next = help -> next;
+        }
     }
     system("PAUSE");
     system("CLS");
 }//POP
+void addEnqueue(){
+    if(isEmptyClientList()){
+        cout << "\n SORRY CANT FOUND THE CLIENT ACCOUNT, CLIENT ACCOUNT IS EMPTY\n\n";
+        system("PAUSE");
+        system("CLS");
+    }else{
+    QueueData temp;
+    cout<<"+"<<setw(58)<<setfill('-')<<"+\n";
+    cout<<"|" << setfill(' ') << setw(41) << "BANKING SYSTEM APPLICATION" <<setfill(' ')<<setw(17) << "|\n";
+    cout<<"|" << setfill(' ') << setw(36) << "INPUT ACCOUNT" <<setfill(' ')<<setw(22) << "|\n";
+    cout<<"|" << setfill(' ') << setw(47) <<"Jl.Veteran No.45, Babasari, Yogyakarta" << setw(11) << "|\n";
+    cout<<"+"<<setw(58)<<setfill('-')<<"+\n";
+    cout<<" QUEUE NO\t: "<<++temp.no<<endl<<endl;
+    cout<<" ACCOUNT ID\t: ";
+    cin.getline(temp.accountNumber, sizeof(temp.accountNumber));
+    cout << endl;
+    cout<<" PIN\t\t: ";
+    cin.getline(temp.PIN, sizeof(temp.PIN));
+    cout << endl;
+    enqueue(temp);
+    }
+}
